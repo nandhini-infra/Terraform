@@ -1,4 +1,4 @@
-root@ip-172-31-30-35:/home/ubuntu/step-functions# cat locals.tf
+# locals.tf
 locals {
   # Map of all available IAM policies constructs for AWS services
   #
