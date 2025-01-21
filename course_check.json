@@ -1,0 +1,67 @@
+{
+  "Comment": "An example of the Amazon States Language for scheduling a task.",
+  "StartAt": "StartHere",
+  "States": {
+    "StartHere": {
+      "Type": "Pass",
+      "Next": "SubjectChoice"
+    },
+    "SubjectChoice": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.Subject",
+          "StringEquals": "Physics",
+          "Next": "Physics"
+        },
+        {
+          "Variable": "$.Subject",
+          "StringEquals": "Maths",
+          "Next": "Maths"
+        }
+      ],
+      "Default": "Rejected"
+    },
+    "Physics": {
+      "Type": "Pass",
+      "Next": "CheckMarks"
+    },
+    "Maths": {
+      "Type": "Pass",
+      "Next": "CheckMarks"
+    },
+    "CheckMarks": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.Marks",
+          "NumericGreaterThan": 70,
+          "Next": "NotifySuccess"
+        }
+      ],
+      "Default": "Rejected"
+    },
+    "NotifySuccess": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "TopicArn": "arn:aws:sns:eu-west-1:058264513155:notify-user",
+        "Message.$": "$.SuccessMessage"
+      },
+      "Next": "EndState"
+    },
+    "Rejected": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "TopicArn": "arn:aws:sns:eu-west-1:058264513155:notify-user",
+        "Message.$": "$.FailMessage"
+      },
+      "Next": "EndState"
+    },
+    "EndState": {
+      "Type": "Pass",
+      "End": true
+    }
+  }
+}
